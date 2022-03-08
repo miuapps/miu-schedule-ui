@@ -43,7 +43,8 @@ class App extends Component {
     const { currentUser, showModeratorBoard, showAdminBoard } = this.state;
     return (
       <Router>
-        <Navbar/>
+        {currentUser && (
+        <Navbar/>)}
         <div>
         {/*<nav className="navbar navbar-expand navbar-dark bg-dark">
             <Link to="/" className="navbar-brand">

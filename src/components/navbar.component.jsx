@@ -22,8 +22,8 @@ import {
   
   export default function Navbar() {
     return (
-      <aside class="w-64" aria-label="Sidebar">
-        <div class="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800">
+      <aside className="w-64" aria-label="Sidebar">
+        <div className="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800">
           <div className="flex-1 flex flex-col min-h-0 bg-gray-800">
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
               <div className="flex items-center flex-shrink-0 px-4">
