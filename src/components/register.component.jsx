@@ -5,6 +5,8 @@ import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
 import { connect } from "react-redux";
 import { register } from "../actions/auth";
+import { Navigate } from "react-router-dom";
+
 const required = (value) => {
   if (!value) {
     return (

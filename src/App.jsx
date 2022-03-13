@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Login from "./components/login.component";
 import Register from "./components/register.component";
@@ -9,16 +9,17 @@ import Profile from "./components/profile.component";
 import DashboardStudent from "./components/dashboard-student.component";
 import DashboardFaculty from "./components/dashboard-faculty.component";
 import DashboardAdmin from "./components/dashboard-admin.component";
-import { logout } from "./actions/auth";
+import NewBlockPage from "./components/new-block.component";
 import { clearMessage } from "./actions/message";
 import { history } from './helpers/history';
-import Navbar from "./components/navbar.component";
+import NewCoursePage from "./components/new-course.component";
+import AuthService from "./services/auth.service"
 class App extends Component {
   constructor(props) {
     super(props);
     this.logOut = this.logOut.bind(this);
     this.state = {
-      showModeratorBoard: false,
+      showFacultyBoard: false,
       showAdminBoard: false,
       currentUser: undefined,
     };
@@ -31,16 +32,21 @@ class App extends Component {
     if (user) {
       this.setState({
         currentUser: user,
-        showModeratorBoard: user.roles.includes("ROLE_MODERATOR"),
+        showFacultyBoard: user.roles.includes("ROLE_FACULTY"),
         showAdminBoard: user.roles.includes("ROLE_ADMIN"),
       });
     }
   }
   logOut() {
-    this.props.dispatch(logout());
+    AuthService.logout();
+    this.setState({
+      showFacultyBoard: false,
+      showAdminBoard: false,
+      currentUser: undefined,
+    });
   }
   render() {
-    const { currentUser, showModeratorBoard, showAdminBoard } = this.state;
+    const { currentUser, showFacultyBoard, showAdminBoard } = this.state;
     return (
       <Router>
         {/*{currentUser && (
@@ -56,7 +62,7 @@ class App extends Component {
                   Home
                 </Link>
               </li>
-              {showModeratorBoard && (
+              {showFacultyBoard && (
                 <li className="nav-item">
                   <Link to="mod" className="nav-link">
                     Moderator Board
@@ -115,6 +121,8 @@ class App extends Component {
               <Route path="/student" element={<DashboardStudent/>} />
               <Route path="/faculty" element={<DashboardFaculty/>} />
               <Route path="/admin" element={<DashboardAdmin/>} />
+              <Route path="/new-block" element={<NewBlockPage/>} />
+              <Route path="/new-course" element={<NewCoursePage/>} />
             </Routes>
           </div>
         </div>

@@ -4,12 +4,17 @@ import { Fragment } from 'react'
 import { Dialog, Menu, Transition } from '@headlessui/react'
 import { ClockIcon, HomeIcon, ViewListIcon, XIcon } from '@heroicons/react/outline'
 import { SelectorIcon } from '@heroicons/react/solid'
+import logo from "../logo.png"
+import { connect } from "react-redux"
+import { logout } from "../actions/auth"
+import AuthVerify from "../actions/auth-verify"
+import AuthService from "../services/auth.service"
 
 const navigation = [
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
-  { name: 'Add New Block', href: '#', icon: ViewListIcon, current: false },
+  { name: 'Add New Block', href: 'new-block', icon: ViewListIcon, current: false },
   { name: 'Add New Entry', href: '#', icon: ViewListIcon, current: false },
-  { name: 'Add New Course', href: '#', icon: ViewListIcon, current: false },
+  { name: 'Add New Course', href: 'new-course', icon: ViewListIcon, current: false },
   { name: 'Recent', href: '#', icon: ClockIcon, current: false },
 ]
 const teams = [
@@ -23,7 +28,7 @@ const teams = [
     return classes.filter(Boolean).join(" ");
   }
   
-  export default class Navbar extends Component { 
+  class Navbar extends Component { 
     constructor(props) {
       super(props);
       this.state = {
@@ -32,26 +37,27 @@ const teams = [
       };
     }
     componentDidMount() {
-      UserService.getStudentBoard().then(
-        response => {
-          this.setState({
-            content: response.data
-          });
-        },
-        error => {
-          this.setState({
-            content:
-              (error.response &&
-                error.response.data &&
-                error.response.data.message) ||
-              error.message ||
-              error.toString()
-          });
-        }
-      );
+      const user = this.props.user;
+      if (user) {
+        this.setState({
+          currentUser: user,
+          showStudentBoard: user.roles.includes("ROLE_STUDENT"),
+          showFacultyBoard: user.roles.includes("ROLE_FACULTY"),
+          showAdminBoard: user.roles.includes("ROLE_ADMIN"),
+        });
+      }
+    }
+    logOut() {
+      AuthService.logout();
+      this.setState({
+        showStudentBoard: false,
+        showFacultyBoard: false,
+        showAdminBoard: false,
+        currentUser: undefined,
+      });
     }
     render() {  
-      
+      const { user: currentUser } = this.props;
       return (
       <div>
         <Transition.Root show={this.state.sidebarOpen} as={Fragment}>
@@ -100,7 +106,7 @@ const teams = [
                 <div className="flex-shrink-0 flex items-center px-4">
                   <img
                     className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/workflow-logo-purple-500-mark-gray-700-text.svg"
+                    src={logo}
                     alt="Workflow"
                   />
                 </div>
@@ -167,8 +173,8 @@ const teams = [
         <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:border-r lg:border-gray-200 lg:pt-5 lg:pb-4 lg:bg-gray-100">
           <div className="flex items-center flex-shrink-0 px-6">
             <img
-              className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/workflow-logo-purple-500-mark-gray-700-text.svg"
+              className="h-14 w-auto"
+              src={logo}
               alt="Workflow"
             />
           </div>
@@ -186,8 +192,8 @@ const teams = [
                         alt=""
                       />
                       <span className="flex-1 flex flex-col min-w-0">
-                        <span className="text-gray-900 text-sm font-medium truncate">Jessy Schwarz</span>
-                        <span className="text-gray-500 text-sm truncate">@jessyschwarz</span>
+                        <span className="text-gray-900 text-sm font-medium truncate">{currentUser.email}</span>
+                        <span className="text-gray-500 text-sm truncate">@{currentUser.username}</span>
                       </span>
                     </span>
                     <SelectorIcon
@@ -226,7 +232,8 @@ const teams = [
                     <Menu.Item>
                       {({ active }) => (
                         <a
-                          href="logout"
+                          href="login"
+                          onClick={this.logOut}
                           className={classNames(
                             active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                             'block px-4 py-2 text-sm'
@@ -316,3 +323,10 @@ const teams = [
     );
   }
 }
+function mapStateToProps(state) {
+  const { user } = state.auth;
+  return {
+    user,
+  };
+}
+export default connect(mapStateToProps)(Navbar);
