@@ -43,8 +43,8 @@ class App extends Component {
     const { currentUser, showModeratorBoard, showAdminBoard } = this.state;
     return (
       <Router>
-        {currentUser && (
-        <Navbar/>)}
+        {/*{currentUser && (
+        <Navbar/>)}*/}
         <div>
         {/*<nav className="navbar navbar-expand navbar-dark bg-dark">
             <Link to="/" className="navbar-brand">
@@ -112,8 +112,8 @@ class App extends Component {
               <Route exact path="/login" element={<Login/>} />
               <Route exact path="/register" element={<Register/>} />
               <Route exact path="/profile" element={<Profile/>} />
-              <Route path="/user" element={<DashboardStudent/>} />
-              <Route path="/mod" element={<DashboardFaculty/>} />
+              <Route path="/student" element={<DashboardStudent/>} />
+              <Route path="/faculty" element={<DashboardFaculty/>} />
               <Route path="/admin" element={<DashboardAdmin/>} />
             </Routes>
           </div>

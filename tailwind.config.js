@@ -1,16 +1,12 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
     content: ["./src/**/*.{js,jsx,ts,tsx}", ],
     theme: {
-        colors: {
-            'blue': '#1fb6ff',
-            'purple': '#7e5bef',
-            'pink': '#ff49db',
-            'orange': '#ff7849',
-            'green': '#13ce66',
-            'yellow': '#ffc82c',
-            'gray-dark': '#273444',
-            'gray': '#8492a6',
-            'gray-light': '#d3dce6',
+        colors: defaultTheme.colors,
+        extend: {
+            container: { center: true, padding: '4rem' },
+            inset: { '0': 0, '1/2': '50%', '1/4': '25%', '1/8': '12.5%', '3/5': '60%', '1/5': '20%' },
         },
         fontFamily: {
             sans: ['Graphik', 'sans-serif'],
