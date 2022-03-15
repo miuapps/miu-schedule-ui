@@ -6,8 +6,6 @@ import { ClockIcon, HomeIcon, ViewListIcon, XIcon } from '@heroicons/react/outli
 import { SelectorIcon } from '@heroicons/react/solid'
 import logo from "../logo.png"
 import { connect } from "react-redux"
-import { logout } from "../actions/auth"
-import AuthVerify from "../actions/auth-verify"
 import AuthService from "../services/auth.service"
 
 const navigation = [

@@ -13,7 +13,9 @@ import NewBlockPage from "./components/new-block.component";
 import { clearMessage } from "./actions/message";
 import { history } from './helpers/history';
 import NewCoursePage from "./components/new-course.component";
+import AuthVerify from "./actions/auth-verify"
 import AuthService from "./services/auth.service"
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -32,6 +34,7 @@ class App extends Component {
     if (user) {
       this.setState({
         currentUser: user,
+        showStudentBoard: user.roles.includes("ROLE_STUDENT"),
         showFacultyBoard: user.roles.includes("ROLE_FACULTY"),
         showAdminBoard: user.roles.includes("ROLE_ADMIN"),
       });
@@ -40,7 +43,7 @@ class App extends Component {
   logOut() {
     AuthService.logout();
     this.setState({
-      showFacultyBoard: false,
+      showModeratorBoard: false,
       showAdminBoard: false,
       currentUser: undefined,
     });
@@ -126,7 +129,7 @@ class App extends Component {
             </Routes>
           </div>
         </div>
-        
+        <AuthVerify logOut={this.logOut}/>
       </Router>
     );
   }
