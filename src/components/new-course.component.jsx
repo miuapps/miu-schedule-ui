@@ -1,49 +1,53 @@
 import React, { Component } from "react";
-import UserService from "../services/user.service";
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { MenuAlt1Icon } from '@heroicons/react/outline'
-import { SearchIcon } from '@heroicons/react/solid'
+import BlockService from "../services/block.service";
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { MenuAlt1Icon } from "@heroicons/react/outline";
+import { SearchIcon } from "@heroicons/react/solid";
 import Navbar from "./navbar.component";
-import logo from "../logo.png"
-import CourseForm from "./course-form.component";
+import logo from "../logo.png";
+import { useState } from "react";
+import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
+import { Combobox } from "@headlessui/react";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 export default class NewCoursePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      blocks: [],
       sidebarOpen: false,
-      content: ""
+      selectedBlock: undefined,
+      content: "",
     };
   }
   componentDidMount() {
-    UserService.getStudentBoard().then(
-      response => {
+    BlockService.getAll().then(
+      (response) => {
         this.setState({
-          content: response.data
+          blocks: response.data,
         });
       },
-      error => {
+      (error) => {
         this.setState({
-          content:
+          blocks:
             (error.response &&
               error.response.data &&
               error.response.data.message) ||
             error.message ||
-            error.toString()
+            error.toString(),
         });
       }
     );
   }
-  render() {  
-    
+
+  render() {
     return (
       <div className="min-h-full">
-        <Navbar/>
+        <Navbar />
         {/* Main column */}
         <div className="lg:pl-64 flex flex-col">
           {/* Search header */}
@@ -82,11 +86,7 @@ export default class NewCoursePage extends Component {
                   <div>
                     <Menu.Button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                       <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src={logo}
-                        alt=""
-                      />
+                      <img className="h-8 w-8 rounded-full" src={logo} alt="" />
                     </Menu.Button>
                   </div>
                   <Transition
@@ -105,23 +105,27 @@ export default class NewCoursePage extends Component {
                             <a
                               href="profile"
                               className={classNames(
-                                active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                'block px-4 py-2 text-sm'
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "block px-4 py-2 text-sm"
                               )}
                             >
                               View profile
                             </a>
                           )}
                         </Menu.Item>
-                        </div>
+                      </div>
                       <div className="py-1">
                         <Menu.Item>
                           {({ active }) => (
                             <a
                               href="logout"
                               className={classNames(
-                                active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                'block px-4 py-2 text-sm'
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "block px-4 py-2 text-sm"
                               )}
                             >
                               Logout
@@ -139,7 +143,9 @@ export default class NewCoursePage extends Component {
             {/* Page title & actions */}
             <div className="border-b border-gray-200 px-4 py-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
               <div className="flex-1 min-w-0">
-                <h1 className="text-lg font-medium leading-6 text-gray-900 sm:truncate">Add New Block</h1>
+                <h1 className="text-lg font-medium leading-6 text-gray-900 sm:truncate">
+                  Add New Course
+                </h1>
               </div>
               <div className="mt-4 flex sm:mt-0 sm:ml-4">
                 <button
@@ -157,12 +163,174 @@ export default class NewCoursePage extends Component {
               </div>
             </div>
             <div className="p-8">
-                <CourseForm/>
+              <form className="space-y-8 divide-y divide-gray-200">
+                <div className="space-y-8 divide-y divide-gray-200">
+                  <div>
+                    <div>
+                      <h3 className="text-lg leading-6 font-medium text-gray-900">
+                        Course Information
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Course's public details. All fields are required.
+                      </p>
+                    </div>
+
+                    <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                      <div className="sm:col-span-4">
+                        <div className="sm:col-span-3">
+                          <label
+                            htmlFor="course-name"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Course Name
+                          </label>
+                          <div className="mt-1">
+                            <input
+                              type="text"
+                              name="course-name"
+                              id="course-name"
+                              autoComplete="course-name"
+                              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <br />
+                      <div className="sm:col-span-2">
+                        <label
+                          htmlFor="course-code"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Course Code
+                        </label>
+                        <div className="mt-1">
+                          <input
+                            type="text"
+                            name="course-code"
+                            id="course-code"
+                            autoComplete="course-code"
+                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label
+                          htmlFor="capacity"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Capacity
+                        </label>
+                        <div className="mt-1">
+                          <input
+                            type="number"
+                            name="capacity"
+                            id="capacity"
+                            autoComplete="capacity"
+                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+                      <p>&nbsp;</p>
+                      <div className="sm:col-span-2">
+                        <Combobox
+                          as="div"
+                          value={this.state.selectedBlock}
+                          onChange={(value) =>
+                            this.setState({ selectedBlock: value })
+                          }
+                        >
+                          <Combobox.Label className="block text-sm font-medium text-gray-700">
+                            Block
+                          </Combobox.Label>
+                          <div className="relative mt-1">
+                            <Combobox.Input
+                              className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                              displayValue={(person) => person.name}
+                            />
+                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                              <SelectorIcon
+                                className="h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                            </Combobox.Button>
+
+                            {this.state.blocks.length > 0 && (
+                              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                {this.state.blocks.map((block) => (
+                                  <Combobox.Option
+                                    key={block.id}
+                                    value={block}
+                                    className={({ active }) =>
+                                      classNames(
+                                        "relative cursor-default select-none py-2 pl-8 pr-4",
+                                        active
+                                          ? "bg-indigo-600 text-white"
+                                          : "text-gray-900"
+                                      )
+                                    }
+                                  >
+                                    {({ active, selected }) => (
+                                      <>
+                                        <span
+                                          className={classNames(
+                                            "block truncate",
+                                            selected && "font-semibold"
+                                          )}
+                                        >
+                                          {block.name}
+                                        </span>
+
+                                        {selected && (
+                                          <span
+                                            className={classNames(
+                                              "absolute inset-y-0 left-0 flex items-center pl-1.5",
+                                              active
+                                                ? "text-white"
+                                                : "text-indigo-600"
+                                            )}
+                                          >
+                                            <CheckIcon
+                                              className="h-5 w-5"
+                                              aria-hidden="true"
+                                            />
+                                          </span>
+                                        )}
+                                      </>
+                                    )}
+                                  </Combobox.Option>
+                                ))}
+                              </Combobox.Options>
+                            )}
+                          </div>
+                        </Combobox>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-5">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => (window.location.href = "courses")}
+                      className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
-            
           </main>
         </div>
       </div>
-    )
-   }
+    );
+  }
 }

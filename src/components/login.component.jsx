@@ -66,8 +66,8 @@ class Login extends Component {
       return <Navigate to="/profile" />;
     }
     return (
-      <div class="flex items-center min-h-screen bg-white dark:bg-gray-900">
-      <div class="container mx-auto">
+      <div className="flex items-center min-h-screen bg-white">
+      <div className="container mx-auto">
           <div className="min-h-full flex">
             <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
               <div className="mx-auto w-full max-w-sm lg:w-96">

@@ -6,15 +6,15 @@ import Login from "./components/login.component";
 import Register from "./components/register.component";
 import Home from "./components/dashboard.component";
 import Profile from "./components/profile.component";
-import DashboardStudent from "./components/dashboard-student.component";
-import DashboardFaculty from "./components/dashboard-faculty.component";
-import DashboardAdmin from "./components/dashboard-admin.component";
+import Dashboard from "./components/dashboard.component";
 import NewBlockPage from "./components/new-block.component";
 import { clearMessage } from "./actions/message";
 import { history } from './helpers/history';
 import NewCoursePage from "./components/new-course.component";
 import AuthVerify from "./actions/auth-verify"
 import AuthService from "./services/auth.service"
+import BlockPage from "./components/list-block.component";
+import CoursePage from "./components/list-course.component";
 
 class App extends Component {
   constructor(props) {
@@ -121,11 +121,11 @@ class App extends Component {
               <Route exact path="/login" element={<Login/>} />
               <Route exact path="/register" element={<Register/>} />
               <Route exact path="/profile" element={<Profile/>} />
-              <Route path="/student" element={<DashboardStudent/>} />
-              <Route path="/faculty" element={<DashboardFaculty/>} />
-              <Route path="/admin" element={<DashboardAdmin/>} />
+              <Route path="/dashboard" element={<Dashboard/>} />
               <Route path="/new-block" element={<NewBlockPage/>} />
+              <Route path="/blocks" element={<BlockPage/>} />
               <Route path="/new-course" element={<NewCoursePage/>} />
+              <Route path="/courses" element={<CoursePage/>} />
             </Routes>
           </div>
         </div>
