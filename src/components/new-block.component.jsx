@@ -1,46 +1,107 @@
 import React, { Component } from "react";
-import UserService from "../services/user.service";
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { MenuAlt1Icon } from '@heroicons/react/outline'
 import { SearchIcon } from '@heroicons/react/solid'
 import Navbar from "./navbar.component";
-import BlockForm from "./block-form.component";
+import { connect } from "react-redux";
 import logo from "../logo.png"
+import { save } from "../actions/block";
+import Form from "react-validation/build/form";
+import Input from "react-validation/build/input";
+import CheckButton from "react-validation/build/button";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
+const required = (value) => {
+  if (!value) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        This field is required!
+      </div>
+    );
+  }
+};
+const vBlockName = (value) => {
+  if (value.length < 3 || value.length > 40) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        The Block name must be between 3 and 40 characters.
+      </div>
+    );
+  }
+};
 
-export default class NewBlockPage extends Component {
+const vDate = (value) => {
+  if (value.length < 8 || value.length > 30) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        Please enter proper date.
+      </div>
+    );
+  }
+};
+
+class NewBlockPage extends Component {
   constructor(props) {
     super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.onChangeBlockName = this.onChangeBlockName.bind(this);
+    this.onChangeStartDate = this.onChangeStartDate.bind(this);
+    this.onChangeEndDate = this.onChangeEndDate.bind(this);
     this.state = {
       sidebarOpen: false,
+      blockName: "",
+      startDate: "",
+      endDate: "",
+      successful: false,
       content: ""
     };
   }
-  componentDidMount() {
-    UserService.getStudentBoard().then(
-      response => {
-        this.setState({
-          content: response.data
+  onChangeBlockName(e) {
+    this.setState({
+      blockName: e.target.value,
+    });
+  }
+  onChangeStartDate(e) {
+    this.setState({
+      startDate: e.target.value,
+    });
+  }
+  onChangeEndDate(e) {
+    this.setState({
+      endDate: e.target.value,
+    });
+  }
+  handleSubmit(e) {
+    e.preventDefault();
+    this.setState({
+      successful: false,
+    });
+    this.form.validateAll();
+    const { history } = this.props;
+    if (this.checkBtn.context._errors.length === 0) {
+      this.props
+        .dispatch(
+          save(this.state.blockName, this.state.startDate, this.state.endDate)
+        )
+        .then(() => {
+          this.setState({
+            successful: true,
+          });
+          history.push("/admin");
+          window.location.reload();
+        })
+        .catch(() => {
+          this.setState({
+            successful: false,
+          });
         });
-      },
-      error => {
-        this.setState({
-          content:
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString()
-        });
-      }
-    );
+    }
   }
   render() {  
-    
+    const { message } = this.props;
     return (
       <div className="min-h-full">
         <Navbar/>
@@ -157,7 +218,116 @@ export default class NewBlockPage extends Component {
               </div>
             </div>
             <div className="p-8">
-                <BlockForm/>
+            <Form onSubmit={this.handleSubmit}
+            ref={(c) => {
+              this.form = c;
+            }} className="space-y-8 divide-y divide-gray-200">
+              <div className="space-y-8 divide-y divide-gray-200">
+                <div>
+                  <div>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Block Information
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Block's public details. All fields are required.
+                    </p>
+                  </div>
+
+                  <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div className="sm:col-span-4">
+                      <div className="sm:col-span-3">
+                        <label
+                          htmlFor="block-name"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Block Name
+                        </label>
+                        <div className="mt-1">
+                          <Input
+                            type="text"
+                            name="block-name"
+                            id="block-name"
+                            autoComplete="block-name"
+                            validations={[required, vBlockName]}
+                            onChange={this.onChangeBlockName}
+                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <br/>
+                    <div className="sm:col-span-2">
+                      <label
+                        htmlFor="start-name"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Start Date
+                      </label>
+                      <div className="mt-1">
+                        <Input
+                          type="text"
+                          name="start-date"
+                            id="start-date"
+                          autoComplete="start-date"
+                          validations={[required, vDate]}
+                          onChange={this.onChangeStartDate}
+                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label
+                        htmlFor="end-date"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        End Date
+                      </label>
+                      <div className="mt-1">
+                        <Input
+                          type="text"
+                          name="end-date"
+                          id="end-date"
+                          autoComplete="end-date"
+                          validations={[required, vDate]}
+                          onChange={this.onChangeEndDate}
+                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </div>
+
+                    </div>
+                </div>
+              </div>
+              {message && (
+                <div className="form-group">
+                  <div className={ this.state.successful ? "alert alert-success" : "alert alert-danger" } role="alert">
+                    {message}
+                  </div>
+                </div>
+              )}                   
+              <div className="pt-5">
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+              <CheckButton
+                style={{ display: "none" }}
+                ref={(c) => {
+                  this.checkBtn = c;
+                }}
+              />
+            </Form>
             </div>
             
           </main>
@@ -166,3 +336,10 @@ export default class NewBlockPage extends Component {
     )
    }
 }
+function mapStateToProps(state) {
+  const { message } = state.message;
+  return {
+    message,
+  };
+}
+export default connect(mapStateToProps)(NewBlockPage);

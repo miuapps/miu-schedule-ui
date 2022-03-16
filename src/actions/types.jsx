@@ -5,3 +5,6 @@ export const LOGIN_FAIL = "LOGIN_FAIL";
 export const LOGOUT = "LOGOUT";
 export const SET_MESSAGE = "SET_MESSAGE";
 export const CLEAR_MESSAGE = "CLEAR_MESSAGE";
+export const SAVE_SUCCESS = "SAVE_SUCCESS";
+export const SAVE_FAIL = "SAVE_FAIL";
+export const RETRIEVE_FAIL = "RETRIEVE_FAIL";

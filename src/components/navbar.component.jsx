@@ -7,6 +7,8 @@ import { SelectorIcon } from '@heroicons/react/solid'
 import logo from "../logo.png"
 import { connect } from "react-redux"
 import AuthService from "../services/auth.service"
+import { logout } from "../actions/auth"
+import AuthVerify from "../actions/auth-verify"
 
 const navigation = [
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
@@ -35,6 +37,23 @@ const teams = [
       };
     }
     componentDidMount() {
+      UserService.getStudentBoard().then(
+        response => {
+          this.setState({
+            content: response.data
+          });
+        },
+        error => {
+          this.setState({
+            content:
+              (error.response &&
+                error.response.data &&
+                error.response.data.message) ||
+              error.message ||
+              error.toString()
+          });
+        }
+      );
       const user = this.props.user;
       if (user) {
         this.setState({
