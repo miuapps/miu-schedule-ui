@@ -15,6 +15,8 @@ import AuthVerify from "./actions/auth-verify"
 import AuthService from "./services/auth.service"
 import BlockPage from "./components/list-block.component";
 import CoursePage from "./components/list-course.component";
+import FacultyPage from "./components/faculty-courses.component";
+import Schedule from "./components/schedule.component";
 
 class App extends Component {
   constructor(props) {
@@ -126,6 +128,8 @@ class App extends Component {
               <Route path="/blocks" element={<BlockPage/>} />
               <Route path="/new-course" element={<NewCoursePage/>} />
               <Route path="/courses" element={<CoursePage/>} />
+              <Route path="/schedule" element={<Schedule/>} />
+              <Route path="/faculty" element={<FacultyPage/>} />
             </Routes>
           </div>
         </div>

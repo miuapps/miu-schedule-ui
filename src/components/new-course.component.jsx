@@ -1,26 +1,71 @@
 import React, { Component } from "react";
 import BlockService from "../services/block.service";
+import FacultyService from "../services/faculty.service";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { MenuAlt1Icon } from "@heroicons/react/outline";
 import { SearchIcon } from "@heroicons/react/solid";
 import Navbar from "./navbar.component";
 import logo from "../logo.png";
-import { useState } from "react";
+import { connect } from "react-redux";
+import { save } from "../actions/course";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { Combobox } from "@headlessui/react";
+import Form from "react-validation/build/form";
+import Input from "react-validation/build/input";
+import CheckButton from "react-validation/build/button";
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
+const required = (value) => {
+  if (!value) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        This field is required!
+      </div>
+    );
+  }
+};
+const vCourseName = (value) => {
+  if (value.length < 3 || value.length > 40) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        The Course name must be between 3 and 40 characters.
+      </div>
+    );
+  }
+};
 
-export default class NewCoursePage extends Component {
+const vCourseCode = (value) => {
+  if (value.length < 2 || value.length > 8) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        The Course code must be between 2 and 8 characters.
+      </div>
+    );
+  }
+};
+
+class NewCoursePage extends Component {
   constructor(props) {
     super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.onChangeCourseName = this.onChangeCourseName.bind(this);
+    this.onChangeCourseCode = this.onChangeCourseCode.bind(this);
+    this.onChangeCapacity = this.onChangeCapacity.bind(this);
+    this.onChangeBlockName = this.onChangeBlockName.bind(this);
+    this.onChangeFaculty = this.onChangeFaculty.bind(this);
     this.state = {
       blocks: [],
+      faculties: [],
       sidebarOpen: false,
       selectedBlock: undefined,
+      selectedFaculty: undefined,
+      courseName: "",
+      courseCode: "",
+      capacity: undefined,
       content: "",
     };
   }
@@ -42,8 +87,76 @@ export default class NewCoursePage extends Component {
         });
       }
     );
+    FacultyService.getFaculties().then(
+      (response) => {
+        this.setState({
+          faculties: response.data,
+        });
+      },
+      (error) => {
+        this.setState({
+          faculties:
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString(),
+        });
+      }
+    );
+  }
+  handleSubmit(e) {
+    e.preventDefault();
+    this.setState({
+      successful: false,
+    });
+    this.form.validateAll();
+    const { history } = this.props;
+    if (this.checkBtn.context._errors.length === 0) {
+      this.props
+        .dispatch(
+          save(this.state.courseName, this.state.courseCode, this.state.capacity
+            ,this.state.selectedBlock.id, this.state.selectedFaculty.id)
+        )
+        .then(() => {
+          this.setState({
+            successful: true,
+          });
+        })
+        .catch(() => {
+          this.setState({
+            successful: false,
+          });
+        });
+        window.location.href = 'courses';
+    }  
   }
 
+  onChangeCourseName(e) {
+    this.setState({
+      courseName: e.target.value,
+    });
+  }
+  onChangeCourseCode(e) {
+    this.setState({
+      courseCode: e.target.value,
+    });
+  }
+  onChangeCapacity(e) {
+    this.setState({
+      capacity: e.target.value,
+    });
+  }
+  onChangeBlockName(e) {
+    this.setState({
+      selectedBlock: e.target.value,
+    });
+  }
+  onChangeFaculty(e) {
+    this.setState({
+      selectedFaculty: e.target.value,
+    });
+  }
   render() {
     return (
       <div className="min-h-full">
@@ -163,7 +276,10 @@ export default class NewCoursePage extends Component {
               </div>
             </div>
             <div className="p-8">
-              <form className="space-y-8 divide-y divide-gray-200">
+              <Form onSubmit={this.handleSubmit}
+                ref={(c) => {
+                  this.form = c;
+                }}  className="space-y-8 divide-y divide-gray-200">
                 <div className="space-y-8 divide-y divide-gray-200">
                   <div>
                     <div>
@@ -185,11 +301,13 @@ export default class NewCoursePage extends Component {
                             Course Name
                           </label>
                           <div className="mt-1">
-                            <input
+                            <Input
                               type="text"
                               name="course-name"
                               id="course-name"
                               autoComplete="course-name"
+                              validations={[required, vCourseName]}
+                              onChange={this.onChangeCourseName}
                               className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                             />
                           </div>
@@ -204,11 +322,13 @@ export default class NewCoursePage extends Component {
                           Course Code
                         </label>
                         <div className="mt-1">
-                          <input
+                          <Input
                             type="text"
                             name="course-code"
                             id="course-code"
                             autoComplete="course-code"
+                            validations={[required, vCourseCode]}
+                            onChange={this.onChangeCourseCode}
                             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                           />
                         </div>
@@ -222,11 +342,13 @@ export default class NewCoursePage extends Component {
                           Capacity
                         </label>
                         <div className="mt-1">
-                          <input
+                          <Input
                             type="number"
                             name="capacity"
                             id="capacity"
                             autoComplete="capacity"
+                            validations={[required]}
+                            onChange={this.onChangeCapacity}
                             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                           />
                         </div>
@@ -246,7 +368,7 @@ export default class NewCoursePage extends Component {
                           <div className="relative mt-1">
                             <Combobox.Input
                               className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                              displayValue={(person) => person.name}
+                              displayValue={selectedBlock => selectedBlock.name}
                             />
                             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <SelectorIcon
@@ -305,6 +427,79 @@ export default class NewCoursePage extends Component {
                           </div>
                         </Combobox>
                       </div>
+                      <div className="sm:col-span-2">
+                        <Combobox
+                          as="div"
+                          value={this.state.selectedFaculty}
+                          onChange={(value) =>
+                            this.setState({ selectedFaculty: value })
+                          }
+                        >
+                          <Combobox.Label className="block text-sm font-medium text-gray-700">
+                            Faculty
+                          </Combobox.Label>
+                          <div className="relative mt-1">
+                            <Combobox.Input
+                              className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                              displayValue={selectedFaculty => selectedFaculty.name}
+                            />
+                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                              <SelectorIcon
+                                className="h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                            </Combobox.Button>
+
+                            {this.state.blocks.length > 0 && (
+                              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                {this.state.faculties.map((faculty) => (
+                                  <Combobox.Option
+                                    key={faculty.id}
+                                    value={faculty}
+                                    className={({ active }) =>
+                                      classNames(
+                                        "relative cursor-default select-none py-2 pl-8 pr-4",
+                                        active
+                                          ? "bg-indigo-600 text-white"
+                                          : "text-gray-900"
+                                      )
+                                    }
+                                  >
+                                    {({ active, selected }) => (
+                                      <>
+                                        <span
+                                          className={classNames(
+                                            "block truncate",
+                                            selected && "font-semibold"
+                                          )}
+                                        >
+                                          {faculty.name}
+                                        </span>
+
+                                        {selected && (
+                                          <span
+                                            className={classNames(
+                                              "absolute inset-y-0 left-0 flex items-center pl-1.5",
+                                              active
+                                                ? "text-white"
+                                                : "text-indigo-600"
+                                            )}
+                                          >
+                                            <CheckIcon
+                                              className="h-5 w-5"
+                                              aria-hidden="true"
+                                            />
+                                          </span>
+                                        )}
+                                      </>
+                                    )}
+                                  </Combobox.Option>
+                                ))}
+                              </Combobox.Options>
+                            )}
+                          </div>
+                        </Combobox>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -326,7 +521,13 @@ export default class NewCoursePage extends Component {
                     </button>
                   </div>
                 </div>
-              </form>
+                <CheckButton
+                  style={{ display: "none" }}
+                  ref={(c) => {
+                    this.checkBtn = c;
+                  }}
+                />
+              </Form>
             </div>
           </main>
         </div>
@@ -334,3 +535,10 @@ export default class NewCoursePage extends Component {
     );
   }
 }
+function mapStateToProps(state) {
+  const { message } = state.message;
+  return {
+    message,
+  };
+}
+export default connect(mapStateToProps)(NewCoursePage);

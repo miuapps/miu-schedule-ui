@@ -9,6 +9,7 @@ import {
   CalendarIcon,
   CubeTransparentIcon,
   SelectorIcon,
+  AcademicCapIcon
 } from "@heroicons/react/outline";
 import logo from "../logo.png";
 import { connect } from "react-redux";
@@ -18,6 +19,7 @@ const navigation = [
   { name: "Home", href: "#", icon: HomeIcon, current: true },
   { name: "Blocks", href: "blocks", icon: CubeTransparentIcon, current: false },
   { name: "Courses", href: "courses", icon: BookOpenIcon, current: false },
+  { name: "Faculty Courses", href: "faculty", icon: AcademicCapIcon, current: false },
   {
     name: "Registration",
     href: "registration",
@@ -26,7 +28,7 @@ const navigation = [
   },
   {
     name: "Schedule",
-    href: "registration",
+    href: "schedule",
     icon: CalendarIcon,
     current: false,
   },
