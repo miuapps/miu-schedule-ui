@@ -15,24 +15,7 @@ import logo from "../logo.png";
 import { connect } from "react-redux";
 import AuthService from "../services/auth.service";
 
-const navigation = [
-  { name: "Home", href: "#", icon: HomeIcon, current: true },
-  { name: "Blocks", href: "blocks", icon: CubeTransparentIcon, current: false },
-  { name: "Courses", href: "courses", icon: BookOpenIcon, current: false },
-  { name: "Faculty Courses", href: "faculty", icon: AcademicCapIcon, current: false },
-  {
-    name: "Registration",
-    href: "registration",
-    icon: CheckCircleIcon,
-    current: false,
-  },
-  {
-    name: "Schedule",
-    href: "schedule",
-    icon: CalendarIcon,
-    current: false,
-  },
-];
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -51,22 +34,40 @@ class Navbar extends Component {
     if (user) {
       this.setState({
         currentUser: user,
-        showStudentBoard: user.roles.includes("ROLE_STUDENT"),
-        showFacultyBoard: user.roles.includes("ROLE_FACULTY"),
-        showAdminBoard: user.roles.includes("ROLE_ADMIN"),
+        isStudent: user.roles.includes("ROLE_STUDENT"),
+        isFaculty: user.roles.includes("ROLE_FACULTY"),
+        isAdmin: user.roles.includes("ROLE_ADMIN"),
       });
     }
   }
   logOut() {
     AuthService.logout();
     this.setState({
-      showStudentBoard: false,
-      showFacultyBoard: false,
-      showAdminBoard: false,
       currentUser: undefined,
     });
   }
   render() {
+    const user = this.props.user;
+    const navigation = [
+      { name: "Home", href: "#", icon: HomeIcon, current: true },
+      { name: "Blocks", href: "blocks", icon: CubeTransparentIcon, current: false, visible: user.roles.includes("ROLE_ADMIN") },
+      { name: "Courses", href: "courses", icon: BookOpenIcon, current: false, visible: user.roles.includes("ROLE_ADMIN") },
+      { name: "Faculty Courses", href: "faculty", icon: AcademicCapIcon, current: false, visible: user.roles.includes("ROLE_FACULTY") },
+      {
+        name: "Course Registration",
+        href: "course-registration",
+        icon: CheckCircleIcon,
+        current: false,
+        visible: user.roles.includes("ROLE_STUDENT")
+      },
+      {
+        name: "Schedule",
+        href: "schedule",
+        icon: CalendarIcon,
+        current: false,
+        visible: user.roles.includes("ROLE_STUDENT")
+      },
+    ];
     const { user: currentUser } = this.props;
     return (
       <div>
@@ -133,10 +134,10 @@ class Navbar extends Component {
                           key={item.name}
                           href={item.href}
                           className={classNames(
-                            item.current
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50",
-                            "group flex items-center px-2 py-2 text-base leading-5 font-medium rounded-md"
+                            item.visible
+                              ? "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                              : "hidden",
+                            "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                           )}
                           aria-current={item.current ? "page" : undefined}
                         >
@@ -253,9 +254,9 @@ class Navbar extends Component {
                     key={item.name}
                     href={item.href}
                     className={classNames(
-                      item.current
-                        ? "bg-gray-200 text-gray-900"
-                        : "text-gray-700 hover:text-gray-900 hover:bg-gray-50",
+                      item.visible
+                        ? "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                        : "hidden",
                       "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                     )}
                     aria-current={item.current ? "page" : undefined}

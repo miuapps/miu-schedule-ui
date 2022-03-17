@@ -4,9 +4,9 @@ import {
     SET_MESSAGE,
     RETRIEVE_FAIL,
   } from "./types";
-  import CourseService from "../services/course.service";
-  export const save = (name, code, capacity, blockId, facultyId) => (dispatch) => {
-    return CourseService.save(name, code, capacity, blockId, facultyId).then(
+  import StudentService from "../services/student.service";
+  export const registerCourse = (studentId, courseId) => (dispatch) => {
+    return StudentService.registerCourse(studentId, courseId).then(
       (response) => {
         dispatch({
           type: SAVE_SUCCESS,
@@ -35,34 +35,8 @@ import {
       }
     );
   };
-  export const getAll = () => (dispatch) => {
-    return CourseService.getAll().then(
-      (data) => {
-        dispatch({
-          payload: { data: data },
-        });
-        return Promise.resolve();
-      },
-      (error) => {
-        const message =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-        dispatch({
-          type: RETRIEVE_FAIL,
-        });
-        dispatch({
-          type: SET_MESSAGE,
-          payload: message,
-        });
-        return Promise.reject();
-      }
-    );
-  };
-  export const getAllByBlock = () => (dispatch) => {
-    return CourseService.getAllByBlock().then(
+  export const getSchedule = () => (dispatch) => {
+    return StudentService.getSchedule().then(
       (data) => {
         dispatch({
           payload: { data: data },

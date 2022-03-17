@@ -80,7 +80,6 @@ class NewBlockPage extends Component {
       successful: false,
     });
     this.form.validateAll();
-    const { history } = this.props;
     if (this.checkBtn.context._errors.length === 0) {
       this.props
         .dispatch(

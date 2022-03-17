@@ -22,5 +22,8 @@ class CourseService {
     getAll() {
         return axios.get(API_URL, { headers: authHeader() });
     }
+    getAllByBlock() {
+        return axios.get( API_URL + '/blockCourse', { headers: authHeader() });
+    }
 }
 export default new CourseService();

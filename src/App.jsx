@@ -17,6 +17,7 @@ import BlockPage from "./components/list-block.component";
 import CoursePage from "./components/list-course.component";
 import FacultyPage from "./components/faculty-courses.component";
 import Schedule from "./components/schedule.component";
+import CourseRegistration from "./components/course-registration.component";
 
 class App extends Component {
   constructor(props) {
@@ -28,7 +29,7 @@ class App extends Component {
       currentUser: undefined,
     };
     history.listen((location) => {
-      props.dispatch(clearMessage()); // clear message when changing location
+      props.dispatch(clearMessage());
     });
   }
   componentDidMount() {
@@ -51,72 +52,9 @@ class App extends Component {
     });
   }
   render() {
-    const { currentUser, showFacultyBoard, showAdminBoard } = this.state;
     return (
       <Router>
-        {/*{currentUser && (
-        <Navbar/>)}*/}
         <div>
-        {/*<nav className="navbar navbar-expand navbar-dark bg-dark">
-            <Link to="/" className="navbar-brand">
-              bezKoder
-            </Link>
-            <div className="navbar-nav mr-auto">
-              <li className="nav-item">
-                <Link to="home" className="nav-link">
-                  Home
-                </Link>
-              </li>
-              {showFacultyBoard && (
-                <li className="nav-item">
-                  <Link to="mod" className="nav-link">
-                    Moderator Board
-                  </Link>
-                </li>
-              )}
-              {showAdminBoard && (
-                <li className="nav-item">
-                  <Link to="admin" className="nav-link">
-                    Admin Board
-                  </Link>
-                </li>
-              )}
-              {currentUser && (
-                <li className="nav-item">
-                  <Link to="user" className="nav-link">
-                    User
-                  </Link>
-                </li>
-              )}
-            </div>
-            {currentUser ? (
-              <div className="navbar-nav ml-auto">
-                <li className="nav-item">
-                  <Link to="profile" className="nav-link">
-                    {currentUser.username}
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <a href="/login" className="nav-link" onClick={this.logOut}>
-                    LogOut
-                  </a>
-                </li>
-              </div>
-            ) : (
-              <div className="navbar-nav ml-auto">
-                <li className="nav-item">
-                  <Link to="login" className="nav-link">
-                    Login
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="register" className="nav-link">
-                    Sign Up
-                  </Link>
-                </li>
-              </div>
-            )}
-          </nav>*/}
           <div className="container mt-3">
             <Routes>
               <Route exact path="/" element={<Home/>} />
@@ -130,6 +68,7 @@ class App extends Component {
               <Route path="/courses" element={<CoursePage/>} />
               <Route path="/schedule" element={<Schedule/>} />
               <Route path="/faculty" element={<FacultyPage/>} />
+              <Route path="/course-registration" element={<CourseRegistration/>} />
             </Routes>
           </div>
         </div>

@@ -1,35 +1,45 @@
 import React, { Component } from "react";
-import BlockService from "../services/block.service";
 import { Fragment } from 'react'
+import StudentService from "../services/student.service";
 import { Menu, Transition } from '@headlessui/react'
 import { MenuAlt1Icon } from '@heroicons/react/outline'
 import { SearchIcon } from '@heroicons/react/solid'
 import Navbar from "./navbar.component";
+import { connect } from "react-redux";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
-const locations = [
-    {
-      name: 'Edinburgh',
-      people: [
-        { name: 'Lindsay Walton', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member' },
-        { name: 'Courtney Henry', title: 'Designer', email: 'courtney.henry@example.com', role: 'Admin' },
-      ],
-    },
-    // More people...
-  ]
-export default class Schedule extends Component {
+
+class Schedule extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      blocks: [],
+      courses: [],
       sidebarOpen: false,
       content: ""
     };
   }
   componentDidMount() {
-   
+    const { user: currentUser } = this.props;
+   StudentService.getSchedule(currentUser.id).then(
+      response => {
+          console.log(response.data)
+        this.setState({
+          courses: response.data,
+        });
+      },
+      error => {
+        this.setState({
+            courses:
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString()
+        });
+      }
+    );
   }
   
   render() {  
@@ -127,7 +137,7 @@ export default class Schedule extends Component {
               </div>
             </div>
           </div>
-          <main className="flex-1">
+          <main className="flex-1">   
             <div>
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="sm:flex sm:items-center">
@@ -140,7 +150,7 @@ export default class Schedule extends Component {
                     <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                     <button
                         type="button"
-                        onClick={() => (window.location.href = "registration")}
+                        onClick={() => (window.location.href = "course-registration")}
                         className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                     >
                         Register Course
@@ -155,52 +165,37 @@ export default class Schedule extends Component {
                             <thead className="bg-white">
                             <tr>
                                 <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                Name
+                                Block Name
                                 </th>
                                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                Title
+                                Course Code
                                 </th>
                                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                Email
+                                Course Name
                                 </th>
                                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                Role
+                                Faculty
                                 </th>
-                                <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                <span className="sr-only">Edit</span>
+                                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                Start Date
                                 </th>
                             </tr>
                             </thead>
                             <tbody className="bg-white">
-                            {locations.map((location) => (
-                                <Fragment key={location.name}>
-                                <tr className="border-t border-gray-200">
-                                    <th
-                                    colSpan={5}
-                                    scope="colgroup"
-                                    className="bg-gray-50 px-4 py-2 text-left text-sm font-semibold text-gray-900 sm:px-6"
-                                    >
-                                    {location.name}
-                                    </th>
-                                </tr>
-                                {location.people.map((person, personIdx) => (
+                            {this.state.courses.map((course) => (
+                                <Fragment key={course.blockName}>
                                     <tr
-                                    key={person.email}
-                                    className={classNames(personIdx === 0 ? 'border-gray-300' : 'border-gray-200', 'border-t')}
+                                    key={course.blockName}
+                                    className="border-gray-300"
                                     >
                                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                        {person.name}
+                                        {course.blockName}
                                     </td>
-                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.title}</td>
-                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.email}</td>
-                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.role}</td>
-                                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                        Edit<span className="sr-only">, {person.name}</span>
-                                        </a>
-                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{course.courseCode}</td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{course.courseName}</td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{course.facultyName}</td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{course.startDate}</td>
                                     </tr>
-                                ))}
                                 </Fragment>
                             ))}
                             </tbody>
@@ -217,3 +212,10 @@ export default class Schedule extends Component {
     )
    }
 }
+function mapStateToProps(state) {
+  const { user } = state.auth;
+  return {
+    user,
+  };
+}
+export default connect(mapStateToProps)(Schedule);

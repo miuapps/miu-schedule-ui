@@ -111,7 +111,6 @@ class NewCoursePage extends Component {
       successful: false,
     });
     this.form.validateAll();
-    const { history } = this.props;
     if (this.checkBtn.context._errors.length === 0) {
       this.props
         .dispatch(
@@ -122,13 +121,13 @@ class NewCoursePage extends Component {
           this.setState({
             successful: true,
           });
+          window.location.href = 'courses';
         })
         .catch(() => {
           this.setState({
             successful: false,
           });
         });
-        window.location.href = 'courses';
     }  
   }
 
