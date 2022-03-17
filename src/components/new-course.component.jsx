@@ -128,6 +128,7 @@ class NewCoursePage extends Component {
             successful: false,
           });
         });
+        window.location.href = 'courses';
     }  
   }
 
@@ -366,6 +367,7 @@ class NewCoursePage extends Component {
                           </Combobox.Label>
                           <div className="relative mt-1">
                             <Combobox.Input
+                              autocomplete='off'
                               className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                               displayValue={selectedBlock => selectedBlock.name}
                             />
@@ -439,6 +441,7 @@ class NewCoursePage extends Component {
                           </Combobox.Label>
                           <div className="relative mt-1">
                             <Combobox.Input
+                              autocomplete='off'
                               className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                               displayValue={selectedFaculty => selectedFaculty.name}
                             />

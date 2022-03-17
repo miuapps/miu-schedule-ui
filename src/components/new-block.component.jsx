@@ -96,6 +96,7 @@ class NewBlockPage extends Component {
             successful: false,
           });
         });
+        window.location.href = 'blocks';
     }
   }
   render() {  

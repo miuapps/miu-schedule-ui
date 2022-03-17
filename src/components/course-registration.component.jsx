@@ -64,7 +64,7 @@ class CourseRegistration extends Component {
         successful: false,
         });
     });
-    //window.location.href = 'courses';
+    window.location.href = 'schedule';
     
  }
   render() {  
